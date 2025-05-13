@@ -2,80 +2,50 @@ from Estado_Cuantico import EstadoCuantico
 from Operador_Cuantico import OperadorCuantico
 from typing import List, Union, Dict, Optional
 import csv
+import os
 
 class RepositorioDeEstados:
-    def __init__(self):
+    def __init__(self, csv_path: str = "estados.csv"):
         """
-        Repositorio para almacenar y gestionar múltiples EstadosCuantico.
+        Repositorio con persistencia automática en CSV.
         """
+        self.csv_path: str = csv_path
         self.estados: Dict[str, EstadoCuantico] = {}
+        # Carga inicial si existe el archivo
+        if os.path.exists(self.csv_path):
+            self.cargar(self.csv_path)
 
     def listar_estados(self) -> List[str]:
-        """
-        Retorna una lista con la representación de cada estado almacenado.
-        """
-        if not self.estados:
-            return []
         return [str(estado) for estado in self.estados.values()]
 
     def agregar_estado(self, id: str, vector: List[Union[complex, float]], base: str = "computacional") -> None:
-        """
-        Crea y agrega un nuevo EstadoCuantico al repositorio.
-        """
         if id in self.estados:
             raise ValueError(f"Error: ya existe un estado con identificador '{id}'")
         estado = EstadoCuantico(id, vector, base)
         self.estados[id] = estado
+        self.guardar(self.csv_path)
 
     def obtener_estado(self, id: str) -> Optional[EstadoCuantico]:
-        """
-        Retorna el EstadoCuantico con el identificador dado, o None si no existe.
-        """
         return self.estados.get(id)
 
     def aplicar_operador(self, id_estado: str, operador: OperadorCuantico, nuevo_id: Optional[str] = None) -> EstadoCuantico:
-        """
-        Aplica un OperadorCuantico a un EstadoCuantico existente en el repositorio.
-
-        Args:
-            id_estado (str): Identificador del estado a transformar.
-            operador (OperadorCuantico): Operador a aplicar.
-            nuevo_id (Optional[str]): Identificador para el nuevo estado. Si no se proporciona,
-                                      se genera como '{id_estado}_{operador.nombre}'.
-
-        Returns:
-            EstadoCuantico: El nuevo estado transformado.
-
-        Raises:
-            KeyError: Si no existe el estado original.
-            ValueError: Si el nuevo_id ya está en uso o dimensiones incompatibles.
-        """
-        # Obtener estado original
         estado_orig = self.obtener_estado(id_estado)
         if estado_orig is None:
             raise KeyError(f"No existe ningún estado con identificador '{id_estado}'")
-
-        # Generar identificador del nuevo estado
         target_id = nuevo_id or f"{id_estado}_{operador.nombre}"
         if target_id in self.estados:
             raise ValueError(f"Error: ya existe un estado con identificador '{target_id}'")
-
-        # Aplicar operador
         estado_nuevo = operador.aplicar(estado_orig)
-        # Ajustar el id si se proporcionó nuevo_id
         estado_nuevo.id = target_id
-        
-        # Almacenar sin borrar el original
         self.estados[target_id] = estado_nuevo
+        self.guardar(self.csv_path)
         return estado_nuevo
 
     def eliminar_estado(self, id: str) -> None:
-        """
-        Elimina el estado con el identificador dado del repositorio.
-        """
         if id not in self.estados:
             raise KeyError(f"No existe ningún estado con identificador '{id}'")
         del self.estados[id]
+        self.guardar(self.csv_path)
     
     def medir(self) -> Dict[str, float]:
         """
@@ -85,35 +55,31 @@ class RepositorioDeEstados:
     
     def guardar(self, archivo: str) -> None:
         """
-        Guarda todos los estados en un archivo CSV en disco.
-        Columnas: id;base;vector_serializado
-        El vector se representa como "r1,i1;r2,i2;...".
+        Guarda todos los estados en CSV.
+        Formato: id;base;vector_serializado (r,i;...)
         """
         with open(archivo, mode='w', newline='') as f:
             writer = csv.writer(f, delimiter=';')
             writer.writerow(['id', 'base', 'vector'])
-            for estado in self.estados.values():
-                vec_str = ';'.join(f"{c.real},{c.imag}" for c in estado.vector)
-                writer.writerow([estado.id, estado.base, vec_str])
-        print(f"Estados guardados en {archivo} ({len(self.estados)} estados)")
+            for e in self.estados.values():
+                vec_str = ';'.join(f"{c.real},{c.imag}" for c in e.vector)
+                writer.writerow([e.id, e.base, vec_str])
 
     def cargar(self, archivo: str) -> None:
         """
-        Carga estados desde un archivo CSV, reemplazando el repositorio actual.
-        Asume formato de columnas id;base;vector, donde vector es "r1,i1;r2,i2;...".
+        Carga desde CSV, reemplazando el repositorio.
         """
         with open(archivo, mode='r', newline='') as f:
             reader = csv.reader(f, delimiter=';')
-            header = next(reader, None)
+            next(reader, None)
             self.estados.clear()
             for row in reader:
                 id, base, vec_str = row[0], row[1], row[2]
                 comps = vec_str.split(';')
                 vector = [complex(*map(float, comp.split(','))) for comp in comps]
                 self.estados[id] = EstadoCuantico(id, vector, base)
-        print(f"Estados cargados desde {archivo} ({len(self.estados)} estados)")
 
-    def medir_estado(self, id: str) -> dict[str, float]:
+    def medir_estado(self, id: str) -> Dict[str, float]:
         estado = self.obtener_estado(id)
         if estado is None:
             raise KeyError(f"No existe ningún estado con identificador '{id}'")
@@ -122,18 +88,3 @@ class RepositorioDeEstados:
         for base_label, p in probs.items():
             print(f"  - Estado base {base_label}: {p*100:.2f}%")
         return probs
-
-    def __str__(self) -> str:
-        def format_complex(c: complex) -> str:
-            real = f"{c.real:.3f}" if abs(c.real) > 1e-9 else "0.000"
-            imag = f"{abs(c.imag):.3f}j" if abs(c.imag) > 1e-9 else ""
-            sign = '+' if c.imag >= 0 else '-'
-            if imag and real != "0.000":
-                return f"{real}{sign}{imag}"
-            return real or imag
-
-        vector_str = ", ".join(format_complex(amp) for amp in self.vector)
-        return f"{self.id}: [{vector_str}] en base {self.base}"
-
-    def __repr__(self) -> str:
-        return f"EstadoCuantico(id='{self.id}', vector={self.vector}, base='{self.base}')"
