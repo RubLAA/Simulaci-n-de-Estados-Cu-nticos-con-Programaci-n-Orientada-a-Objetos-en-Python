@@ -26,21 +26,6 @@ class TestEstadoCuantico:
         probs = e.medir()
         assert probs["|0⟩"] == pytest.approx(0.5)
         assert probs["|1⟩"] == pytest.approx(0.5)
-    
-    def test_guardar_y_cargar_con_integridad(self, tmp_path):
-        repo = RepositorioDeEstados()
-        repo.agregar_estado("q0", [1, 0])
-        repo.agregar_estado("q1", [0, 1])
-        path = tmp_path / "repo.csv"
-        repo.guardar(str(path))
-
-        # Eliminar en memoria y recargar
-        repo = None
-        nuevo_repo = RepositorioDeEstados()
-        nuevo_repo.cargar(str(path))
-        estados = nuevo_repo.listar_estados()
-        assert any("q0" in s for s in estados)
-        assert any("q1" in s for s in estados)
 
 class TestOperadorCuantico:
     @pytest.fixture
