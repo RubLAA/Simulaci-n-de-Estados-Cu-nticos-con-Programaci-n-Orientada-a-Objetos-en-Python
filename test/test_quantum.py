@@ -1,8 +1,8 @@
 import math
 import pytest
-from Estado_Cuantico import EstadoCuantico
-from Operador_Cuantico import OperadorCuantico
-from RepositorioDeEstados import RepositorioDeEstados
+from src.quantum.Estado_Cuantico import EstadoCuantico
+from src.quantum.Operador_Cuantico import OperadorCuantico
+from src.quantum.RepositorioDeEstados import RepositorioDeEstados
 
 class TestEstadoCuantico:
     def test_creacion_str_y_atributos(self):

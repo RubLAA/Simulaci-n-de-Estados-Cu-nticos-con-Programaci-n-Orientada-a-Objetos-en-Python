@@ -1,5 +1,5 @@
-from RepositorioDeEstados import RepositorioDeEstados
-from Operador_Cuantico import OperadorCuantico
+from src.quantum.RepositorioDeEstados import RepositorioDeEstados
+from src.quantum.Operador_Cuantico import OperadorCuantico
 import math
 
 
