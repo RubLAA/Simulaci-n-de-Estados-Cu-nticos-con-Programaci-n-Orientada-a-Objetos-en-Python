@@ -75,3 +75,24 @@ class RepositorioDeEstados:
         if id not in self.estados:
             raise KeyError(f"No existe ningún estado con identificador '{id}'")
         del self.estados[id]
+    
+    def medir(self) -> Dict[str, float]:
+        """
+        Calcula las probabilidades de medición para cada estado base.
+        """
+        return {f"|{i}⟩": float(abs(amp)**2) for i, amp in enumerate(self.vector)}
+
+    def __str__(self) -> str:
+        def format_complex(c: complex) -> str:
+            real = f"{c.real:.3f}" if abs(c.real) > 1e-9 else "0.000"
+            imag = f"{abs(c.imag):.3f}j" if abs(c.imag) > 1e-9 else ""
+            sign = '+' if c.imag >= 0 else '-'
+            if imag and real != "0.000":
+                return f"{real}{sign}{imag}"
+            return real or imag
+
+        vector_str = ", ".join(format_complex(amp) for amp in self.vector)
+        return f"{self.id}: [{vector_str}] en base {self.base}"
+
+    def __repr__(self) -> str:
+        return f"EstadoCuantico(id='{self.id}', vector={self.vector}, base='{self.base}')"
