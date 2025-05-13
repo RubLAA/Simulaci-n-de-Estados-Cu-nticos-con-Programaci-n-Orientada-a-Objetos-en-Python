@@ -18,19 +18,20 @@ Además, incluye una suite de pruebas unitarias con **pytest** para garantizar e
 
 ```plaintext
 src
-└── cuantica
+└── quantum
     ├── __init__.py
-    ├── estado_cuantico.py
-    ├── operador_cuantico.py
-    ├── repositorio.py
-    └── main.py       # (opcional) CLI
+    ├── Estado_Cuantico.py
+    ├── Operador_Cuantico.py
+    ├── RepositorioDeEstados.py
+    └── menu.py
 
-tests
+test
 ├── __init__.py
 └── test_quantum.py
 
 requirements.txt
 README.md
+main.py
 ```
 
 - **src/cuantica/**: paquete Python con las clases principales.
