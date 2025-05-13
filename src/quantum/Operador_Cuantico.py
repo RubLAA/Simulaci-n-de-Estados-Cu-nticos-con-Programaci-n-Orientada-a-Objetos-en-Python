@@ -1,4 +1,4 @@
-from src.quantum.Estado_Cuantico import EstadoCuantico
+from Estado_Cuantico import EstadoCuantico
 import numpy as np
 from typing import List, Union, Dict
 
