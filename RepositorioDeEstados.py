@@ -1,6 +1,7 @@
 from Estado_Cuantico import EstadoCuantico
 from Operador_Cuantico import OperadorCuantico
 from typing import List, Union, Dict, Optional
+import csv
 
 class RepositorioDeEstados:
     def __init__(self):
@@ -81,6 +82,36 @@ class RepositorioDeEstados:
         Calcula las probabilidades de medición para cada estado base.
         """
         return {f"|{i}⟩": float(abs(amp)**2) for i, amp in enumerate(self.vector)}
+    
+    def guardar(self, archivo: str) -> None:
+        """
+        Guarda todos los estados en un archivo CSV en disco.
+        Columnas: id;base;vector_serializado
+        El vector se representa como "r1,i1;r2,i2;...".
+        """
+        with open(archivo, mode='w', newline='') as f:
+            writer = csv.writer(f, delimiter=';')
+            writer.writerow(['id', 'base', 'vector'])
+            for estado in self.estados.values():
+                vec_str = ';'.join(f"{c.real},{c.imag}" for c in estado.vector)
+                writer.writerow([estado.id, estado.base, vec_str])
+        print(f"Estados guardados en {archivo} ({len(self.estados)} estados)")
+
+    def cargar(self, archivo: str) -> None:
+        """
+        Carga estados desde un archivo CSV, reemplazando el repositorio actual.
+        Asume formato de columnas id;base;vector, donde vector es "r1,i1;r2,i2;...".
+        """
+        with open(archivo, mode='r', newline='') as f:
+            reader = csv.reader(f, delimiter=';')
+            header = next(reader, None)
+            self.estados.clear()
+            for row in reader:
+                id, base, vec_str = row[0], row[1], row[2]
+                comps = vec_str.split(';')
+                vector = [complex(*map(float, comp.split(','))) for comp in comps]
+                self.estados[id] = EstadoCuantico(id, vector, base)
+        print(f"Estados cargados desde {archivo} ({len(self.estados)} estados)")
 
     def __str__(self) -> str:
         def format_complex(c: complex) -> str:
