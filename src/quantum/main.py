@@ -1,6 +1,6 @@
 import sys
-from Operador_Cuantico import OperadorCuantico
-from RepositorioDeEstados import RepositorioDeEstados
+from .Operador_Cuantico import OperadorCuantico
+from .RepositorioDeEstados import RepositorioDeEstados
 
 MENU = '''
 === Gestor de Estados Cuánticos ===

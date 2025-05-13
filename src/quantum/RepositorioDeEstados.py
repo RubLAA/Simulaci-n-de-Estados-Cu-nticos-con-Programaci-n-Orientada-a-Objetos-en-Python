@@ -1,5 +1,5 @@
-from Estado_Cuantico import EstadoCuantico
-from Operador_Cuantico import OperadorCuantico
+from .Estado_Cuantico import EstadoCuantico
+from .Operador_Cuantico import OperadorCuantico
 from typing import List, Union, Dict, Optional
 import csv
 import os
