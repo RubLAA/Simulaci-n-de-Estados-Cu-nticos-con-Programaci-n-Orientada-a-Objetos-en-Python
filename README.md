@@ -1,6 +1,6 @@
 # Simulación de Estados Cuánticos con Programación Orientada a Objetos en Python
 
-Repositorio: [Simulación de Estados Cuánticos (GitHub)](https://github.com/RubLAA/Simulaci%C3%B3n-de-Estados-Cu%C3%A1nticos-con-Programaci%C3%B3n-Orientada-a-Objetos-en-Python.git)
+Repositorio: https://github.com/RubLAA/Simulaci-n-de-Estados-Cu-nticos-con-Programaci-n-Orientada-a-Objetos-en-Python.git
 
 Este proyecto implementa la gestión de estados cuánticos con funcionalidades de:
 
