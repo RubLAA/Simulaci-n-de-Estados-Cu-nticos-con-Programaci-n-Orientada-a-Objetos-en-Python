@@ -9,6 +9,8 @@ Este proyecto implementa la gestión de estados cuánticos con funcionalidades d
 
 Además, incluye una suite de pruebas unitarias con pytest para garantizar el correcto funcionamiento.
 
+#URL: https://github.com/RubLAA/Simulaci-n-de-Estados-Cu-nticos-con-Programaci-n-Orientada-a-Objetos-en-Python.git
+
 ## Estructura del proyecto
 
 ```plaintext
