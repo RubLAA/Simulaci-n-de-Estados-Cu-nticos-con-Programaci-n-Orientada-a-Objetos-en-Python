@@ -113,6 +113,16 @@ class RepositorioDeEstados:
                 self.estados[id] = EstadoCuantico(id, vector, base)
         print(f"Estados cargados desde {archivo} ({len(self.estados)} estados)")
 
+    def medir_estado(self, id: str) -> dict[str, float]:
+        estado = self.obtener_estado(id)
+        if estado is None:
+            raise KeyError(f"No existe ningún estado con identificador '{id}'")
+        probs = estado.medir()
+        print(f"Medición del estado {estado.id} (base {estado.base}):")
+        for base_label, p in probs.items():
+            print(f"  - Estado base {base_label}: {p*100:.2f}%")
+        return probs
+
     def __str__(self) -> str:
         def format_complex(c: complex) -> str:
             real = f"{c.real:.3f}" if abs(c.real) > 1e-9 else "0.000"

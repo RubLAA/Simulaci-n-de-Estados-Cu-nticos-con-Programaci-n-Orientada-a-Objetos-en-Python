@@ -15,7 +15,7 @@ class OperadorCuantico:
         # Convertir la matriz a numpy array de dtype=complex
         self.matriz: np.ndarray = np.array(matriz, dtype=complex)
         # Verificar que la matriz sea cuadrada
-        filas, cols = self.matriz.shapen        
+        filas, cols = self.matriz.shape        
         if filas != cols:
             raise ValueError("La matriz del operador debe ser cuadrada (n×n)")
 
